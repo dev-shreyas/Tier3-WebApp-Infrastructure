@@ -1,6 +1,7 @@
 variable "cluster_name" {
   description = "Name of cluster"
   type = string
+  default = "flaskapp-eks-cluster"
 }
 
 variable "region" {
