@@ -21,7 +21,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Iac/**
+        working-directory: Tier3-WebApp-Infrastructure/Iac
     permissions:
       contents: read
       id-token: write
