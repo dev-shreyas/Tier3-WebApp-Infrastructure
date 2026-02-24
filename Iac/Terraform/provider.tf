@@ -16,7 +16,7 @@ provider "aws" {
 
 provider "helm" {
   kubernetes = {
-    config_path = "~/.kube/config"
+    //config_path = "~/.kube/config"
     host = module.aws_managed_eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.aws_managed_eks.cluster_certificate_authority_data)
     token = data.aws_eks_cluster_auth.cluster.token
