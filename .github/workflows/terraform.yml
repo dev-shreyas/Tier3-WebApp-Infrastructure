@@ -74,7 +74,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: workloads/aws_alb_cont
+        working-directory: Iac/Terraform/workloads/aws_alb_cont
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
           aws-region: ap-southeast-2
 
       - uses: hashicorp/setup-terraform@v3
-
+      
       - name: Terraform Init
         run: terraform init
 
