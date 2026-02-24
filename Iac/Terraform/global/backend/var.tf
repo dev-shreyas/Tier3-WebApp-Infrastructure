@@ -5,10 +5,10 @@ variable "region" {
 
 variable "bucket_name" {
   description = "The name of the S3 bucket for Terraform state"
-  default     = "tf-state-managed-bucket-flaskapp"
+  default     = "flaskapp.tfstate"
 }
 
 variable "lock_table" {
     description = "The name of the DynamoDB table for Terraform state locking"
-    default     = "tf-lock-table"
+    default     = "tfstate-locks"
 }
