@@ -57,7 +57,7 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: infrastructure-plan
           path: Iac/Terraform/envs/dev/tfplan
@@ -92,6 +92,6 @@ jobs:
 
       - name: Terraform plan
         run: terraform plan -out=tfplan
-        
+
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan    
