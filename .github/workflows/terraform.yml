@@ -3,7 +3,7 @@ name: Management Infrastructure Provisioning
 on:
   pull_request:
     paths:
-      - "Terraform/**"
+      - "Iac/**"
 
   push:
     branches:
