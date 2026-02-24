@@ -6,9 +6,9 @@ resource "helm_release" "alb_controller" {
 
   values = [
     yamlencode({
-      clusterName = var.cluster_name
-      region      = var.region
-      vpcId       = var.vpc_id
+      clusterName = data.aws_eks_cluster.cluster.name
+      region      = data.aws_eks_cluster.cluster.region
+      vpcId       = data.aws_eks_cluster.cluster.vpc_id
       serviceAccount = {
         create = false
         name   = "aws-load-balancer-controller"

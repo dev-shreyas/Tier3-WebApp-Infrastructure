@@ -1,7 +1,7 @@
-variable "cluster_name" {
-  description = "Name of cluster"
-  type = string
-}
+# variable "cluster_name" {
+#   description = "Name of cluster"
+#   type = string
+# }
 
 variable "region" {
   description = "AWS region"
