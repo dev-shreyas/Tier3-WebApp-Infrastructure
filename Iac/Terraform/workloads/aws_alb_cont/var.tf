@@ -1,7 +1,7 @@
-# variable "cluster_name" {
-#   description = "Name of cluster"
-#   type = string
-# }
+variable "cluster_name" {
+  description = "Name of cluster"
+  type = string
+}
 
 variable "region" {
   description = "AWS region"
@@ -13,4 +13,8 @@ variable "vpc_id" {
   description = "VPC ID"
   type = string
   default = "10.0.0.0/16"
+}
+
+variable "alb_irsa_role_arn" {
+  type = string
 }

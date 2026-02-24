@@ -6,9 +6,9 @@ resource "helm_release" "alb_controller" {
 
   values = [
     yamlencode({
-      clusterName = data.aws_eks_cluster.cluster.name
-      region      = data.aws_eks_cluster.cluster.region
-      vpcId       = data.aws_eks_cluster.cluster.vpc_id
+      clusterName = var.cluster_name
+      region      = var.region
+      vpcId       = var.vpc_id
       serviceAccount = {
         create = false
         name   = "aws-load-balancer-controller"
@@ -23,7 +23,7 @@ resource "kubernetes_service_account_v1" "alb_controller" {
     namespace = "kube-system"
 
     annotations = {
-      "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
+      "eks.amazonaws.com/role-arn" = var.alb_irsa_role_arn
     }
   }
 }
