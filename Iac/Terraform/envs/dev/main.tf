@@ -1,14 +1,14 @@
 module "vpc" {
-  source = "../../modules/aws_vpc"
-  vpc_cidr = "10.0.0.0/16"
-  vpc_name = "flaskapp-eks-vpc"
-  vpc_azs = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
+  source              = "../../modules/aws_vpc"
+  vpc_cidr            = "10.0.0.0/16"
+  vpc_name            = "flaskapp-eks-vpc"
+  vpc_azs             = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
   vpc_private_subnets = [for i in range(1, 4) : "10.0.${i}.0/24"]
-  vpc_public_subnets = [for i in range(101, 104) : "10.0.${i}.0/24"]
+  vpc_public_subnets  = [for i in range(101, 104) : "10.0.${i}.0/24"]
 }
 
 module "iam_roles" {
-  source = "../../modules/aws_iam_roles"
+  source      = "../../modules/aws_iam_roles"
   oidc_issuer = module.aws_managed_eks.cluster_oidc_issuer
 }
 
@@ -17,43 +17,43 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 module "aws_managed_eks" {
-  source = "../../modules/aws_managed_eks"
-  cluster_name = "flaskapp-eks-cluster"
+  source             = "../../modules/aws_managed_eks"
+  cluster_name       = "flaskapp-eks-cluster"
   kubernetes_version = "1.34"
-  vpc_ids = [module.vpc.vpc_id]
-  subnet_ids = module.vpc.private_subnets
-  environment = "dev"
+  vpc_ids            = [module.vpc.vpc_id]
+  subnet_ids         = module.vpc.private_subnets
+  environment        = "dev"
 }
 
 module "ecr" {
-  source = "../../modules/aws_ecr"
+  source          = "../../modules/aws_ecr"
   repository_name = "flaskapp-dev-ecr"
 }
 
-provider "kubernetes" {
-  config_path = "~/.kube/config"
-}
+# provider "kubernetes" {
+#   config_path = "~/.kube/config"
+# }
 
-provider "helm" {
-  kubernetes = {
-    config_path = "~/.kube/config"
-  }
-}
+# provider "helm" {
+#   kubernetes = {
+#     config_path = "~/.kube/config"
+#   }
+# }
 
-module "aws_alb_cont" {
-  source = "../../modules/aws_alb_cont"
-  cluster_name = module.aws_managed_eks.cluster_name
-  region = var.region
-  vpc_id = module.vpc.vpc_id
-}
+# module "aws_alb_cont" {
+#   source       = "../../modules/aws_alb_cont"
+#   cluster_name = module.aws_managed_eks.cluster_name
+#   region       = var.region
+#   vpc_id       = module.vpc.vpc_id
+# }
 
-resource "kubernetes_service_account_v1" "alb_controller" {
-  metadata {
-    name = "aws-load-balancer-controller"
-    namespace = "kube-system"
+# resource "kubernetes_service_account_v1" "alb_controller" {
+#   metadata {
+#     name      = "aws-load-balancer-controller"
+#     namespace = "kube-system"
 
-    annotations = {
-      "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
-    }
-  }
-}
+#     annotations = {
+#       "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
+#     }
+#   }
+# }
