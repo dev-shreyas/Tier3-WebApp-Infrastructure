@@ -1,6 +1,8 @@
 name: Management Infrastructure Provisioning
 
 on:
+  workflow_dispatch:
+    
   pull_request:
     paths:
       - "Iac/**"
