@@ -2,7 +2,7 @@ name: Management Infrastructure Provisioning
 
 on:
   workflow_dispatch:
-    
+
   pull_request:
     paths:
       - "Iac/**"
@@ -42,10 +42,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
-
-      # - name: Terraform Format Check
-      #   run: terraform fmt -check      
+        run: terraform init    
 
       - name: Terraform Validate
         run: terraform validate
@@ -57,6 +54,36 @@ jobs:
         with:
           name: infrastructure-plan
           path: Iac/Terraform/envs/dev/tfplan
+
+  terraform-apply:
+    name: Terraform Plan waiting for approval
+    runs-on: ubuntu-latest
+    needs: infrastructure-provisioning
+    defaults:
+      run:
+        working-directory: Iac/Terraform/envs/dev
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::426449772112:role/github-terraform-role
+          aws-region: ap-southeast-2
+          
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+        
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: infrastructure-plan
+          path: Iac/Terraform/envs/dev/tfplan
+      
+      - name: Terraform init
+        run: terraform init    
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
