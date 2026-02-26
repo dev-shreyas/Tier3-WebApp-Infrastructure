@@ -2,16 +2,6 @@ name: Infrastructure Deprovisioning
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Select the environment to deprovision'
-        # required: true
-        # default: 'dev'
-        # type: choice
-        # options:
-        #   - dev
-        #   - staging
-        #   - prod
 
 permissions:
   contents: read

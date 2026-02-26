@@ -8,9 +8,6 @@ on:
       - "workloads/**"
 
   push:
-    branches:
-      - main
-      - fix-pipe
     paths:
       - "Iac/**"
       - ".github/workflows/terraform.yml"
@@ -28,9 +25,6 @@ jobs:
     defaults:
       run:
         working-directory: Iac/Terraform/envs/dev
-    # permissions:
-    #   contents: read
-    #   id-token: write
 
     steps:
       - name: Checkout Repository
