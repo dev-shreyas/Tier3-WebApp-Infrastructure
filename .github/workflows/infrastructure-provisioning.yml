@@ -1,18 +1,6 @@
 name: Management Infrastructure Provisioning
 
 on:
-  workflow_dispatch:
-    inputs:
-     environment:
-       description: 'Select the environment to provision'
-       required: true
-       default: 'dev'
-       type: choice
-       options:
-         - dev
-         - staging
-         - prod
-         
   pull_request:
     paths:
       - "Iac/**"
@@ -20,6 +8,8 @@ on:
       - "workloads/**"
 
   push:
+    branches:
+      - main
     paths:
       - "Iac/**"
       - ".github/workflows/terraform.yml"
@@ -66,10 +56,10 @@ jobs:
           path: Iac/Terraform/envs/dev/tfplan
 
   terraform-apply:
-    name: Terraform Plan waiting for approval
+    name: Terraform Apply (main merge only)
     runs-on: ubuntu-latest
     needs: infrastructure-provisioning
-    environment: ${{ github.event.inputs.environment }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: Iac/Terraform/envs/dev
@@ -91,20 +81,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: infrastructure-plan
-          path: Iac/Terraform/envs/dev/tfplan
+          path: Iac/Terraform/envs/dev
       
       - name: Terraform init
         run: terraform init    
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
 
   worload-deployment:
     name: Workload Deployment (alb + Helm + kubeconfig)
     runs-on: ubuntu-latest
     needs: infrastructure-provisioning
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     defaults:
       run:
