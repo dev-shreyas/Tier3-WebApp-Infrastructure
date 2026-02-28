@@ -2,6 +2,12 @@ name: Management Infrastructure Provisioning
 
 on:
   pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
     paths:
       - "Iac/**"
       - ".github/workflows/terraform.yml"
