@@ -79,9 +79,6 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - name: Wait for EKS to become active
-        run: |
-          aws eks wait cluster-active --name flaskapp-eks-cluster --region ap-southeast-2
       - name: Terraform Init
         run: terraform init -reconfigure
 
