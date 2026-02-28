@@ -2,7 +2,7 @@ name: Management Infrastructure Provisioning
 
 on:
   workflow_dispatch:
-    
+
   pull_request:
     branches:
       - main
@@ -57,6 +57,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
+        working-directory: Iac/Terraform/envs/dev
         run: terraform init
 
       - name: Terraform Validate
