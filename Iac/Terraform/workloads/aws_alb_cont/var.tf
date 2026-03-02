@@ -18,5 +18,5 @@ variable "vpc_id" {
 
 variable "alb_irsa_role_arn" {
   type = string
-  default = "arn:aws:iam::426449772112:role/alb-irsa-role"
+  default = "arn:aws:iam::426449772112:role/alb-controller-role"
 }
