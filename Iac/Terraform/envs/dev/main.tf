@@ -45,3 +45,22 @@ resource "kubernetes_service_account_v1" "alb_controller" {
     }
   }
 }
+
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name = module.aws_managed_eks.cluster_name
+  principal_arn = module.iam_roles.github_actions_role_arn
+
+  depends_on = [ module.aws_managed_eks ]
+  
+}
+
+resource "aws_eks_access_policy_association" "github_actions_admin" {
+  cluster_name = module.aws_managed_eks.cluster_name
+  policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = module.iam_roles.github_actions_role_arn
+
+  access_scope {
+    type = "cluster"
+  }
+  
+}
