@@ -50,13 +50,6 @@ data "aws_iam_role" "github_terraform_role" {
   name = "github-terraform-role"
 }
 
-resource "aws_eks_access_entry" "github_actions" {
-  cluster_name  = module.aws_managed_eks.cluster_name
-  principal_arn = data.aws_iam_role.github_terraform_role.arn
-
-  depends_on = [module.aws_managed_eks]
-}
-
 resource "aws_eks_access_policy_association" "github_actions_admin" {
   cluster_name  = module.aws_managed_eks.cluster_name
   principal_arn = data.aws_iam_role.github_terraform_role.arn
