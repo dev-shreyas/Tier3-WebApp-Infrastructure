@@ -60,21 +60,17 @@ resource "aws_eks_access_policy_association" "github_actions_admin" {
   }
 }
 
-# data "aws_iam_user" "current_user" {
-#   user_name = "IAMUser1"
-# }
+resource "aws_eks_access_entry" "local_user" {
+  cluster_name  = module.aws_managed_eks.cluster_name
+  principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
+}
 
-# resource "aws_eks_access_entry" "local_admin" {
-#   cluster_name  = module.aws_managed_eks.cluster_name
-#   principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
-# }
+resource "aws_eks_access_policy_association" "local_user_admin" {
+  cluster_name  = module.aws_managed_eks.cluster_name
+  principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
-# resource "aws_eks_access_policy_association" "local_admin_policy" {
-#   cluster_name  = module.aws_managed_eks.cluster_name
-#   principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
-#   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
-#   access_scope {
-#     type = "cluster"
-#   }
-# }
+  access_scope {
+    type = "cluster"
+  }
+}
