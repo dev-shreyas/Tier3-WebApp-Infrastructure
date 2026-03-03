@@ -6,14 +6,12 @@ on:
   pull_request:
     paths:
       - "Iac/**"
-      - ".github/workflows/terraform.yml"
-      - "workloads/**"
+      - ".github/workflows/infrastructure-provisioning.yml"
 
   push:
     paths:
       - "Iac/**"
-      - ".github/workflows/terraform.yml"
-      - "workloads/**"
+      - ".github/workflows/infrastructure-provisioning.yml"
 
 permissions:
   contents: read
@@ -21,7 +19,7 @@ permissions:
 
 jobs:
   infrastructure-provisioning:
-    name: Infrastructure Provisioning (VPC + EKS + IAM)
+    name: Infrastructure Provisioning (VPC + EKS + IAM + ALB)
     runs-on: ubuntu-latest
 
     defaults:
@@ -42,10 +40,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
-
-      # - name: Terraform Format Check
-      #   run: terraform fmt -check      
+        run: terraform init     
 
       - name: Terraform Validate
         run: terraform validate
@@ -61,36 +56,3 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-
-  worload-deployment:
-    name: Workload Deployment (alb + Helm + kubeconfig)
-    runs-on: ubuntu-latest
-    needs: infrastructure-provisioning
-    if: github.ref == 'refs/heads/main'
-
-    defaults:
-      run:
-        working-directory: Iac/Terraform/workloads/aws_alb_cont
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::426449772112:role/github-terraform-role
-          aws-region: ap-southeast-2
-
-      - uses: hashicorp/setup-terraform@v3
-
-      - name: Wait for EKS to become active
-        run: |
-          aws eks wait cluster-active --name flaskapp-eks-cluster --region ap-southeast-2
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform plan
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan    
