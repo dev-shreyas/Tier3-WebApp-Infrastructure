@@ -46,21 +46,42 @@ resource "kubernetes_service_account_v1" "alb_controller" {
   }
 }
 
-resource "aws_eks_access_entry" "github_actions" {
-  cluster_name = module.aws_managed_eks.cluster_name
-  principal_arn = module.iam_roles.github_actions_role_arn
+data "aws_iam_role" "github_terraform_role" {
+  name = "github-terraform-role"
+}
 
-  depends_on = [ module.aws_managed_eks ]
-  
+resource "aws_eks_access_entry" "github_actions" {
+  cluster_name  = module.aws_managed_eks.cluster_name
+  principal_arn = data.aws_iam_role.github_terraform_role.arn
+
+  depends_on = [module.aws_managed_eks]
 }
 
 resource "aws_eks_access_policy_association" "github_actions_admin" {
-  cluster_name = module.aws_managed_eks.cluster_name
-  policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = module.iam_roles.github_actions_role_arn
+  cluster_name  = module.aws_managed_eks.cluster_name
+  principal_arn = data.aws_iam_role.github_terraform_role.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
   access_scope {
     type = "cluster"
   }
-  
 }
+
+# data "aws_iam_user" "current_user" {
+#   user_name = "IAMUser1"
+# }
+
+# resource "aws_eks_access_entry" "local_admin" {
+#   cluster_name  = module.aws_managed_eks.cluster_name
+#   principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
+# }
+
+# resource "aws_eks_access_policy_association" "local_admin_policy" {
+#   cluster_name  = module.aws_managed_eks.cluster_name
+#   principal_arn = "arn:aws:iam::426449772112:user/IAMUser1"
+#   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+#   access_scope {
+#     type = "cluster"
+#   }
+# }
