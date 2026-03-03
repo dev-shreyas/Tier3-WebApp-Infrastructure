@@ -1,1 +1,0 @@
-alb_irsa_role_arn = "arn:aws:iam::426449772112:role/alb-controller-role"

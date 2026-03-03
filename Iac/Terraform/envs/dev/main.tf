@@ -12,10 +12,6 @@ module "iam_roles" {
   oidc_issuer = module.aws_managed_eks.cluster_oidc_issuer
 }
 
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.aws_managed_eks.cluster_name
-}
-
 module "aws_managed_eks" {
   source             = "../../modules/aws_managed_eks"
   cluster_name       = "flaskapp-eks-cluster"
@@ -30,30 +26,22 @@ module "ecr" {
   repository_name = "flaskapp-dev-ecr"
 }
 
-# provider "kubernetes" {
-#   config_path = "~/.kube/config"
-# }
+module "aws_alb_cont" {
+  source       = "../../modules/aws_alb_cont"
+  cluster_name = module.aws_managed_eks.cluster_name
+  region       = var.region
+  vpc_id       = module.vpc.vpc_id
 
-# provider "helm" {
-#   kubernetes = {
-#     config_path = "~/.kube/config"
-#   }
-# }
+  depends_on = [ module.aws_managed_eks ]
+}
 
-# module "aws_alb_cont" {
-#   source       = "../../modules/aws_alb_cont"
-#   cluster_name = module.aws_managed_eks.cluster_name
-#   region       = var.region
-#   vpc_id       = module.vpc.vpc_id
-# }
+resource "kubernetes_service_account_v1" "alb_controller" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
 
-# resource "kubernetes_service_account_v1" "alb_controller" {
-#   metadata {
-#     name      = "aws-load-balancer-controller"
-#     namespace = "kube-system"
-
-#     annotations = {
-#       "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
-#     }
-#   }
-# }
+    annotations = {
+      "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
+    }
+  }
+}
