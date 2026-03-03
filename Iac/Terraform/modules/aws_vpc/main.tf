@@ -11,4 +11,16 @@ module "vpc" {
   map_public_ip_on_launch = true
   enable_nat_gateway = var.enable_nat_gateway
   enable_vpn_gateway = var.enable_vpn_gateway
+  single_nat_gateway = true
+  one_nat_gateway_per_az = false
+
+  public_subnet_tags = {
+    "kubernetes.io/cluster/flaskapp-eks-cluster" = "shared"
+    "kubernetes.io/role/elb"                     = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/flaskapp-eks-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"            = "1"
+  }
 }
