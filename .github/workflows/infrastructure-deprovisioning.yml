@@ -2,20 +2,31 @@ name: Infrastructure Deprovisioning
 
 on:
   workflow_dispatch:
+    
+  pull_request:
+    paths:
+      - "Iac/**"
+      - ".github/workflows/infrastructure-deprovisioning.yml"
+
+  push:
+    paths:
+      - "Iac/**"
+      - ".github/workflows/infrastructure-deprovisioning.yml"
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  worload-deprovisioning:
-      name: Workload Deprovisioning (alb + Helm + kubeconfig)
+
+  infrastructure-deprovisioning:
+      name: Infrastructure Deprovisioning (VPC + EKS + IAM + ALB)
       runs-on: ubuntu-latest
-      environment: ${{ github.event.inputs.environment }}
 
       defaults:
         run:
-          working-directory: Iac/Terraform/workloads/aws_alb_cont
+          working-directory: Iac/Terraform/envs/dev
+
       steps:
         - name: Checkout Repository
           uses: actions/checkout@v4
@@ -26,45 +37,15 @@ jobs:
             role-to-assume: arn:aws:iam::426449772112:role/github-terraform-role
             aws-region: ap-southeast-2
 
-        - uses: hashicorp/setup-terraform@v3
+        - name: Install Terraform
+          uses: hashicorp/setup-terraform@v3
 
         - name: Terraform Init
           run: terraform init
 
         - name: Terraform plan
-          run: terraform plan  
+          run: terraform plan -out=tfplan
 
         - name: Terraform Destroy
-          run: terraform destroy -auto-approve
-
-  infrastructure-deprovisioning:
-    name: Infrastructure Deprovisioning (VPC + EKS + IAM)
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
-    needs: worload-deprovisioning
-
-    defaults:
-      run:
-        working-directory: Iac/Terraform/envs/${{ github.event.inputs.environment }}
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::426449772112:role/github-terraform-role
-          aws-region: ap-southeast-2
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform plan
-        run: terraform plan
-
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve  
+          if: github.ref == 'refs/heads/main'
+          run: terraform destroy -auto-approve tfplan
