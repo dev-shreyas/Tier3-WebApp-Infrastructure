@@ -2,7 +2,7 @@ module "vpc" {
   source              = "../../modules/aws_vpc"
   vpc_cidr            = "10.0.0.0/16"
   vpc_name            = "flaskapp-eks-vpc"
-  vpc_azs             = ["ap-southeast-2a", "ap-southeast-2b", "ap-southeast-2c"]
+  vpc_azs             = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
   vpc_private_subnets = [for i in range(1, 4) : "10.0.${i}.0/24"]
   vpc_public_subnets  = [for i in range(101, 104) : "10.0.${i}.0/24"]
 }

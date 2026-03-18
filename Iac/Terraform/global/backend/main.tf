@@ -1,16 +1,19 @@
 provider "aws" {
-    region = var.region
+  region = var.region
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = var.bucket_name
+  count  = length(var.bucket_name)
+  bucket = var.bucket_name[count.index]
 }
 
 resource "aws_s3_bucket_versioning" "s3_versioning" {
-    bucket = aws_s3_bucket.terraform_state.id
-    versioning_configuration {
-        status = "Enabled"
-    }
+  count  = length(var.bucket_name)
+  bucket = aws_s3_bucket.terraform_state[count.index].id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
@@ -21,5 +24,5 @@ resource "aws_dynamodb_table" "terraform_locks" {
   attribute {
     name = "LockID"
     type = "S"
-  } 
+  }
 }

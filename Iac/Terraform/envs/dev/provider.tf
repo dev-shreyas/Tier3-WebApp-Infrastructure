@@ -11,7 +11,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = "ap-south-1"
 }
 
 data "aws_eks_cluster_auth" "cluster" {
