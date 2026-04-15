@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   alb-controller-provision:
-    name: ALB Controller Helm Provisioning
+    name: Infrastructure Provisioning (ALB Controller Helm)
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,7 +37,7 @@ jobs:
             -backend-config="bucket=helm-charts.tfstate" \
             -backend-config="key=helm-charts/alb-controller/alb_helm.tfstate" \
             -backend-config="region=ap-south-1" \
-            -backend-config="dynamodb_table=terraform-locks"
+            -backend-config="dynamodb_table=tfstate-locks"
 
       - name: Terraform Validate
         run: terraform validate
