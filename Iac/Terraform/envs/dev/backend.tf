@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket         = "flaskapp.tfstate"
-    key            = "dev/mgmt/terraform.tfstate"
+    bucket         = "infra-mgmt.tfstate"
+    key            = "dev/mgmt/Infrastructure.tfstate"
     region         = "ap-south-1"
     dynamodb_table = "tfstate-locks"
     use_lockfile   = true

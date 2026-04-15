@@ -26,25 +26,25 @@ module "ecr" {
   repository_name = "flaskapp-dev-ecr"
 }
 
-module "aws_alb_cont" {
-  source       = "../../modules/aws_alb_cont"
-  cluster_name = module.aws_managed_eks.cluster_name
-  region       = var.region
-  vpc_id       = module.vpc.vpc_id
+# module "aws_alb_cont" {
+#   source       = "../../modules/aws_alb_cont"
+#   cluster_name = module.aws_managed_eks.cluster_name
+#   region       = var.region
+#   vpc_id       = module.vpc.vpc_id
 
-  depends_on = [ module.aws_managed_eks ]
-}
+#   depends_on = [ module.aws_managed_eks ]
+# }
 
-resource "kubernetes_service_account_v1" "alb_controller" {
-  metadata {
-    name      = "aws-load-balancer-controller"
-    namespace = "kube-system"
+# resource "kubernetes_service_account_v1" "alb_controller" {
+#   metadata {
+#     name      = "aws-load-balancer-controller"
+#     namespace = "kube-system"
 
-    annotations = {
-      "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
-    }
-  }
-}
+#     annotations = {
+#       "eks.amazonaws.com/role-arn" = module.iam_roles.alb_controller_role_arn
+#     }
+#   }
+# }
 
 data "aws_iam_role" "github_terraform_role" {
   name = "github-terraform-role"
