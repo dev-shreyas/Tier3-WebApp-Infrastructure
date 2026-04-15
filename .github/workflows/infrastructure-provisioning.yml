@@ -60,5 +60,4 @@ jobs:
   alb-controller-provision:
     name: ALB Controller Helm Provisioning
     needs: infrastructure-provisioning
-    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/alb-controller-helm.yml
