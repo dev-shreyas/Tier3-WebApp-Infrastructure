@@ -6,7 +6,7 @@ output "node_group_role_arn" {
   value = aws_iam_role.eks_node_group.arn
 }
 
-
-output "alb_controller_role_arn" {
-  value = aws_iam_role.alb_controller.arn
-}
+# ===== ALB Controller output (moved to separate helm-charts/alb-controller pipeline) =====
+# output "alb_controller_role_arn" {
+#   value = aws_iam_role.alb_controller.arn
+# }
