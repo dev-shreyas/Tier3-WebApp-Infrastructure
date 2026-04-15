@@ -53,7 +53,8 @@ resource "aws_iam_role_policy_attachment" "alb_controller" {
 
 # ===== Kubernetes Service Account =====
 
-resource "kubernetes_namespace_v1" "alb_system" {
+# Reference existing kube-system namespace (system namespace always exists)
+data "kubernetes_namespace_v1" "alb_system" {
   metadata {
     name = var.alb_controller_namespace
   }
@@ -62,14 +63,12 @@ resource "kubernetes_namespace_v1" "alb_system" {
 resource "kubernetes_service_account_v1" "alb_controller" {
   metadata {
     name      = var.alb_sa_name
-    namespace = var.alb_controller_namespace
+    namespace = data.kubernetes_namespace_v1.alb_system.metadata[0].name
 
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.alb_controller.arn
     }
   }
-
-  depends_on = [kubernetes_namespace_v1.alb_system]
 }
 
 # ===== Helm Release for ALB Controller =====
