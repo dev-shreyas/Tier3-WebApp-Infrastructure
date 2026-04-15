@@ -34,8 +34,8 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="bucket=flaskapp-terraform-state" \
-            -backend-config="key=helm-charts/alb-controller/terraform.tfstate" \
+            -backend-config="bucket=helm-charts.tfstate" \
+            -backend-config="key=helm-charts/alb-controller/alb_helm.tfstate" \
             -backend-config="region=ap-south-1" \
             -backend-config="dynamodb_table=terraform-locks"
 
