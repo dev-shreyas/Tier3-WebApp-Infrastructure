@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket         = "flaskapp-terraform-state"
-    key            = "helm-charts/alb-controller/terraform.tfstate"
+    bucket         = "helm-charts.tfstate"
+    key            = "helm-charts/alb-controller/alb_helm.tfstate"
     region         = "ap-south-1"
     encrypt        = true
     dynamodb_table = "terraform-locks"
