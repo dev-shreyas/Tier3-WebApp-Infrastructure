@@ -5,7 +5,7 @@ variable "region" {
 
 variable "bucket_name" {
   description = "The name of the S3 bucket for Terraform state"
-  default     = ["infra-mgmt.tfstate", "helm-charts.tfstate"]
+  default     = ["infras-mgmt.tfstate", "helm-chart.tfstate"]
   type        = list(string)
 }
 
