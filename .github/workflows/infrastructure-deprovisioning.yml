@@ -1,6 +1,9 @@
 name: Infrastructure Deprovisioning
 
 on:
+  # Manual-only trigger for safety
+  # This workflow MUST NOT have automatic triggers (push/pull_request/schedule)
+  # to prevent accidental infrastructure destruction
   workflow_dispatch:
 
 permissions:
@@ -8,9 +11,44 @@ permissions:
   id-token: write
 
 jobs:
+  alb-controller-deprovisioning:
+    name: ALB Controller Deprovisioning
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Iac/Terraform/helm-charts/alb-controller
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::881953412430:role/github-terraform-role
+          aws-region: ap-south-1
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=helm-chart.tfstate" \
+            -backend-config="key=helm-charts/alb-controller/alb_helm.tfstate" \
+            -backend-config="region=ap-south-1" \
+            -backend-config="use_lockfile=true"
+
+      - name: Terraform Plan Destroy (ALB Controller)
+        run: terraform plan -destroy -var-file="envs/dev.tfvars" -out=tfplan
+
+      - name: Terraform Apply Destroy (ALB Controller)
+        run: terraform apply -auto-approve tfplan
 
   infrastructure-deprovisioning:
-    name: Infrastructure Deprovisioning
+    name: Infrastructure Deprovisioning (VPC + EKS + IAM)
+    needs: alb-controller-deprovisioning
     runs-on: ubuntu-latest
 
     defaults:
@@ -33,8 +71,8 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Plan Destroy
+      - name: Terraform Plan Destroy (Infrastructure)
         run: terraform plan -destroy -out=tfplan
 
-      - name: Terraform Apply Destroy
+      - name: Terraform Apply Destroy (Infrastructure)
         run: terraform apply -auto-approve tfplan
