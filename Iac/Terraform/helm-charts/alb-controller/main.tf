@@ -78,7 +78,11 @@ resource "helm_release" "alb_controller" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
   namespace  = var.alb_controller_namespace
-  //version    = var.alb_helm_version
+  version    = var.alb_helm_version
+  
+  # Increase timeout for slow cluster environments
+  timeout = 600 # 10 minutes in seconds
+  wait    = true
 
   values = [
     yamlencode({
@@ -92,25 +96,16 @@ resource "helm_release" "alb_controller" {
       replicaCount = 2
       resources = {
         limits = {
+          cpu    = "200m"
+          memory = "256Mi"
+        }
+        requests = {
           cpu    = "100m"
           memory = "128Mi"
         }
-        requests = {
-          cpu    = "50m"
-          memory = "64Mi"
-        }
       }
-      nodeSelector = {
-        workload = "system"
-      }
-      tolerations = [
-        {
-          key      = "workload"
-          operator = "Equal"
-          value    = "system"
-          effect   = "NoSchedule"
-        }
-      ]
+      # Removed nodeSelector to allow pod scheduling on any node
+      # If you need to restrict to specific nodes, ensure the labels exist
     })
   ]
 

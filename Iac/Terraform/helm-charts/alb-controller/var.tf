@@ -37,5 +37,5 @@ variable "alb_sa_name" {
 variable "alb_helm_version" {
   description = "Helm chart version for ALB controller"
   type        = string
-  default     = "2.6.2"
+  default     = "2.8.0"
 }
