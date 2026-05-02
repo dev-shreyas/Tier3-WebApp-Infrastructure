@@ -78,7 +78,7 @@ resource "helm_release" "alb_controller" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
   namespace  = var.alb_controller_namespace
-  version    = var.alb_helm_version
+  //version    = var.alb_helm_version
   
   # Increase timeout for slow cluster environments
   timeout = 600 # 10 minutes in seconds
