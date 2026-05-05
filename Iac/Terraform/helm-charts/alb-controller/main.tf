@@ -1,20 +1,3 @@
-# ===== Remote State Data Source for Dev Environment =====
-data "terraform_remote_state" "dev" {
-  backend = "s3"
-  config = {
-    bucket         = "infras-mgmt.tfstate"
-    key            = "dev/mgmt/Infrastructure.tfstate"
-    region         = "ap-south-1"
-    encrypt        = true
-    dynamodb_table = "tfstate-locks"
-  }
-}
-
-# ===== AWS EKS Cluster Data Source =====
-data "aws_eks_cluster" "cluster" {
-  name = data.terraform_remote_state.dev.outputs.cluster_name
-}
-
 # ===== ALB Controller IAM Resources =====
 
 data "aws_caller_identity" "current" {}
@@ -38,7 +21,7 @@ resource "aws_iam_policy" "alb_controller" {
 
 # IAM Role for ALB Controller with IRSA
 resource "aws_iam_role" "alb_controller" {
-  name               = "alb-controller-role-${var.environment}"
+  name = "alb-controller-role-${var.environment}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -96,7 +79,7 @@ resource "helm_release" "alb_controller" {
   chart      = "aws-load-balancer-controller"
   namespace  = var.alb_controller_namespace
   //version    = var.alb_helm_version
-  
+
   # Increase timeout for slow cluster environments
   timeout = 600 # 10 minutes in seconds
   wait    = true

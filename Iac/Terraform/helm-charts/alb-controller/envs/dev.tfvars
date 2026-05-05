@@ -5,7 +5,7 @@
 # region               = "ap-south-1"           # Override: Uses data.terraform_remote_state.dev.outputs.region
 # cluster_name         = "flaskapp-eks-cluster" # Override: Uses data.terraform_remote_state.dev.outputs.cluster_name
 # vpc_id               = "vpc-05f4199678fcdf2ea"# Override: Uses data.terraform_remote_state.dev.outputs.vpc_id
-environment          = "dev"
+environment              = "dev"
 alb_controller_namespace = "kube-system"
-alb_sa_name          = "aws-load-balancer-controller"
+alb_sa_name              = "aws-load-balancer-controller"
 //alb_helm_version     = "2.8.0"

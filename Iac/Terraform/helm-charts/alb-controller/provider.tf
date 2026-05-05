@@ -15,17 +15,29 @@ terraform {
   }
 }
 
+# ===== Remote State Data Source for Dev Environment =====
+data "terraform_remote_state" "dev" {
+  backend = "s3"
+  config = {
+    bucket         = "infras-mgmt.tfstate"
+    key            = "dev/mgmt/Infrastructure.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+    dynamodb_table = "tfstate-locks"
+  }
+}
+
 provider "aws" {
-  region = var.region
+  region = data.terraform_remote_state.dev.outputs.region
 }
 
 # Get EKS cluster information
 data "aws_eks_cluster" "cluster" {
-  name = var.cluster_name
+  name = data.terraform_remote_state.dev.outputs.cluster_name
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
+  name = data.terraform_remote_state.dev.outputs.cluster_name
 }
 
 provider "kubernetes" {
