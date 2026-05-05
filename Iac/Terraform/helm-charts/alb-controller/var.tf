@@ -1,19 +1,19 @@
 variable "region" {
-  description = "AWS region"
+  description = "AWS region (overridden by remote state from dev environment)"
   type        = string
   default     = "ap-south-1"
 }
 
 variable "cluster_name" {
-  description = "EKS cluster name"
+  description = "EKS cluster name (overridden by remote state from dev environment)"
   type        = string
   default     = "flaskapp-eks-cluster"
 }
 
 variable "vpc_id" {
-  description = "VPC ID for ALB controller"
+  description = "VPC ID for ALB controller (overridden by remote state from dev environment)"
   type        = string
-  default     = "10.0.0.0/16"
+  default     = ""
 }
 
 variable "environment" {

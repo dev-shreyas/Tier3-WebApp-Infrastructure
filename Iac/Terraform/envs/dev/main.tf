@@ -74,3 +74,19 @@ resource "aws_eks_access_policy_association" "local_user_admin" {
     type = "cluster"
   }
 }
+
+# ===== Outputs for dependent services (ALB Controller, etc) =====
+output "vpc_id" {
+  description = "VPC ID for ALB controller and other services"
+  value       = module.vpc.vpc_id
+}
+
+output "cluster_name" {
+  description = "EKS cluster name"
+  value       = module.aws_managed_eks.cluster_name
+}
+
+output "region" {
+  description = "AWS region"
+  value       = var.region
+}

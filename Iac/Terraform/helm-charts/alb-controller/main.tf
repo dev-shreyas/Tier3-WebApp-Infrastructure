@@ -1,3 +1,20 @@
+# ===== Remote State Data Source for Dev Environment =====
+data "terraform_remote_state" "dev" {
+  backend = "s3"
+  config = {
+    bucket         = "infras-mgmt.tfstate"
+    key            = "dev/mgmt/Infrastructure.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+    dynamodb_table = "tfstate-locks"
+  }
+}
+
+# ===== AWS EKS Cluster Data Source =====
+data "aws_eks_cluster" "cluster" {
+  name = data.terraform_remote_state.dev.outputs.cluster_name
+}
+
 # ===== ALB Controller IAM Resources =====
 
 data "aws_caller_identity" "current" {}
@@ -86,9 +103,9 @@ resource "helm_release" "alb_controller" {
 
   values = [
     yamlencode({
-      clusterName = var.cluster_name
-      region      = var.region
-      vpcId       = var.vpc_id
+      clusterName = data.terraform_remote_state.dev.outputs.cluster_name
+      region      = data.terraform_remote_state.dev.outputs.region
+      vpcId       = data.terraform_remote_state.dev.outputs.vpc_id
       serviceAccount = {
         create = false
         name   = kubernetes_service_account_v1.alb_controller.metadata[0].name
